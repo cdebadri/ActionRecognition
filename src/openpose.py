@@ -31,7 +31,7 @@ class openpose:
 
         return detected_points
 
-    def process(self, frame, frame_height, frame_width):
+    def process(self, frame):
         frame_height, frame_width = int(frame.shape[0]), int(frame.shape[1])
         blob = cv.dnn.blobFromImage(frame, 1./255, (64, 64), (0, 0, 0), swapRB=False, crop=False)
         self.net.setInput(blob)

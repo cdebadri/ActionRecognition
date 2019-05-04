@@ -32,6 +32,7 @@ class App:
         # Get a frame from the video source
         ret, frame = self.vid.get_frame()
         frame = cv2.resize(frame, (640, 480))
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         if ret:
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
             self.C.create_image(0, 0, image = self.photo, anchor = tkinter.NW)

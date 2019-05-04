@@ -22,7 +22,7 @@ class App:
         self.delay = 15
         self.update()
 
-        self.top.mainloop()
+        # self.top.mainloop()
 
     def count_set(self):
         self.count=1
@@ -31,6 +31,7 @@ class App:
     def update(self):
         # Get a frame from the video source
         ret, frame = self.vid.get_frame()
+        frame = cv2.resize(frame, (640, 480))
         if ret:
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
             self.C.create_image(0, 0, image = self.photo, anchor = tkinter.NW)
@@ -61,14 +62,6 @@ class MyVideoCapture:
         if self.vid.isOpened():
             self.vid.release()
 
-top=tkinter.Tk()
-
-pw1=PanedWindow()
-pw1.pack(fill=BOTH,expand=1)
-
-#Creating the canvas
-C=Canvas(top, bg = "blue", height = 368, width = 368)
-pw1.add(C)
 
 def livevideo():
     App(top,C, "Tkinter and OpenCV",0)
@@ -76,21 +69,34 @@ def livevideo():
 def myvideo():
     filename=askopenfilename()
     App(top,C, "Tkinter and OpenCV",filename)
-    
-#Creating the menu button
-mb= Menubutton(top, text = "Get Video Clip", relief = RAISED )
-mb.menu = Menu(mb,tearoff=0)
-mb["menu"]  =  mb.menu
-mb.menu.add_command(label="Take video", command=livevideo)
-mb.menu.add_command(label="Open a video file", command=myvideo)
-mb.pack()
 
-pw2=PanedWindow(pw1)
-pw1.add(pw2)
+if __name__ == '__main__':
+    top=tkinter.Tk()
+
+    pw1=PanedWindow()
+    pw1.pack(fill=BOTH,expand=1)
+
+    #Creating the canvas
+    C=Canvas(top, bg = "blue", height = 480, width = 640)
+    pw1.add(C)
+
+        
+    #Creating the menu button
+    mb= Menubutton(top, text = "Get Video Clip", relief = RAISED )
+    mb.menu = Menu(mb,tearoff=0)
+    mb["menu"]  =  mb.menu
+    mb.menu.add_command(label="Take video", command=livevideo)
+    mb.menu.add_command(label="Open a video file", command=myvideo)
+    mb.pack()
+
+    pw2=PanedWindow(pw1)
+    pw1.add(pw2)
 
 
-r=Label(pw2, text="pose_output")
-pw2.add(r)
-#if pose detected is stored in variable pose_output then use this line to display output in messagebox 
-#messagebox.showinfo("THE DETECTED POSE",pose_output)
+    r=Label(pw2, text="pose_output")
+    pw2.add(r)
+    #if pose detected is stored in variable pose_output then use this line to display output in messagebox 
+    #messagebox.showinfo("THE DETECTED POSE",pose_output)
+
+    top.mainloop()
 

@@ -16,8 +16,8 @@ class App:
     
         self.vid = MyVideoCapture(self.video_source)
 
-        self.B=Button(top, text="Stop Video",command=self.count_set)
-        self.B.pack()
+        self.B=Button(pw2, text="Stop Video",command=self.count_set)
+        pw2.add(self.B)
         
         self.delay = 15
         self.update()
@@ -74,30 +74,26 @@ def myvideo():
 if __name__ == '__main__':
     top=tkinter.Tk()
 
-    pw1=PanedWindow()
-    pw1.pack(fill=BOTH,expand=1)
+    pw=PanedWindow()
+    pw.pack(fill=BOTH,expand=1)
 
+    pw1=PanedWindow(pw,orient=VERTICAL)
+    pw.add(pw1)
     #Creating the canvas
-    C=Canvas(top, bg = "blue", height = 480, width = 640)
+    C=Canvas(pw1, bg = "blue", height = 480, width = 640)
     pw1.add(C)
 
-        
+    pw2=PanedWindow(pw1)
+    pw1.add(pw2)    
     #Creating the menu button
-    mb= Menubutton(top, text = "Get Video Clip", relief = RAISED )
+    mb= Menubutton(pw2, text = "Get Video Clip", relief = RAISED,padx=125)
     mb.menu = Menu(mb,tearoff=0)
     mb["menu"]  =  mb.menu
     mb.menu.add_command(label="Take video", command=livevideo)
     mb.menu.add_command(label="Open a video file", command=myvideo)
-    mb.pack()
+    pw2.add(mb)
 
-    pw2=PanedWindow(pw1)
-    pw1.add(pw2)
-
-
-    r=Label(pw2, text="pose_output")
-    pw2.add(r)
-    #if pose detected is stored in variable pose_output then use this line to display output in messagebox 
-    #messagebox.showinfo("THE DETECTED POSE",pose_output)
+    r=Label(pw, text="pose_output",padx=100)
+    pw.add(r)
 
     top.mainloop()
-

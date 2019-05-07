@@ -4,7 +4,7 @@ import os
 
 class pose_recognition:
     def __init__(self):
-        self.graph = pose_recognition.load_graph(os.path.abspath(__file__ + '/../../models/lstm.pb'))
+        self.graph = pose_recognition.load_graph(os.path.abspath(__file__ + '/../../models/lstm97.pb'))
 
     @staticmethod
     def load_graph(path):
@@ -19,7 +19,7 @@ class pose_recognition:
 
     def inference(self, points):
         x = self.graph.get_tensor_by_name('prefix/input:0')
-        y = self.graph.get_tensor_by_name('prefix/add_1:0')
+        y = self.graph.get_tensor_by_name('prefix/output:0')
 
         with tf.Session(graph=self.graph) as sess:
             output = sess.run(y, feed_dict={ x: points })
@@ -28,14 +28,14 @@ class pose_recognition:
 
     @staticmethod
     def action(act):
-        if act == 1:
+        if act == 0:
             return 'jumping'
-        elif act == 2:
+        elif act == 1:
             return 'jumping jacks'
-        elif act == 3:
+        elif act == 2:
             return 'boxing'
-        elif act == 4:
+        elif act == 3:
             return 'waving 2 hands'
-        elif act == 5:
+        elif act == 4:
             return 'waving 1 hand'
         return 'clapping'

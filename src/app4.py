@@ -5,6 +5,8 @@ import numpy as np
 from tkinter.filedialog import askopenfilename
 from tkinter import *
 from tkinter import messagebox
+from openpose import openpose
+from pose_recogntion import pose_recogntion
 
 class App:
     def __init__(self, top,C, top_title, video_source):
@@ -72,6 +74,9 @@ def myvideo():
     App(top,C, "Tkinter and OpenCV",filename)
 
 if __name__ == '__main__':
+    # openpose_obj = openpose()
+    # recog_obj = pose_recognition()
+
     top=tkinter.Tk()
 
     pw1=PanedWindow()

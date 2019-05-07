@@ -1,4 +1,10 @@
-assets
-models
+assets/daria_wave1.avi
+assets/daria_wave2.avi
+assets/jumping_jacks.mp4
+assets/jumping.mp4
+
+models/pose_iter_440000.caffemodel
+models/pose_deploy_linevec.prototxt
+
 .vscode
 src/__pycache__

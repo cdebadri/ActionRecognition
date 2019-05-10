@@ -6,10 +6,10 @@ from tkinter.filedialog import askopenfilename
 from tkinter import *
 from tkinter import messagebox
 from openpose import openpose
-from pose_recogntion import pose_recogntion
+from pose_recognition import pose_recognition
 
 class App:
-    def __init__(self, top,C, top_title, video_source):
+    def __init__(self, top,C, top_title, video_source, openpose_obj, recog_obj):
         self.top=top
         self.C=C
         self.top.title(top_title)
@@ -17,9 +17,18 @@ class App:
         self.count=0
     
         self.vid = MyVideoCapture(self.video_source)
+        self.openpose_obj = openpose_obj
+        self.recog_obj = recog_obj
+        self.points = np.zeros((32, 36), dtype=np.float32)
+        self.index = 0
+        self.pose_output = StringVar()
+        self.pose_output.set('pose output to be displayed here')
 
         self.B=Button(pw2, text="Stop Video",command=self.count_set)
         pw2.add(self.B)
+
+        self.r = Label(pw, textvariable=self.pose_output, padx=100)
+        pw.add(self.r)
         
         self.delay = 15
         self.update()
@@ -29,11 +38,21 @@ class App:
     def count_set(self):
         self.count=1
         self.B.destroy()
+        self.r.destroy()
 
     def update(self):
         # Get a frame from the video source
         ret, frame = self.vid.get_frame()
+        global pose_output
         if ret:
+            if self.index < 31:
+                self.points[self.index] = self.openpose_obj.process(frame)
+                frame = openpose.draw_points(frame, self.points[self.index])
+                self.index += 1
+            else:
+                pose = self.recog_obj.inference([self.points])
+                self.pose_output.set(pose)
+                self.index = 0
             frame = cv2.resize(frame, (640, 480))
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
@@ -53,7 +72,8 @@ class MyVideoCapture:
         if self.vid.isOpened():
             ret, frame = self.vid.read()
             if ret:
-                # Return a boolean success flag and the current frame
+                if frame.shape[1] < 1280 or frame.shape[0] < 720:
+                    frame = cv2.resize(frame, (1280, 720))
                 return (ret, frame)
             else:
                 return (ret, None)
@@ -65,17 +85,16 @@ class MyVideoCapture:
         if self.vid.isOpened():
             self.vid.release()
 
+def livevideo(openpose_obj, recog_obj):
+    App(top,C, "Action Recognizer",0, openpose_obj, recog_obj)
 
-def livevideo():
-    App(top,C, "Tkinter and OpenCV",0)
-
-def myvideo():
+def myvideo(openpose_obj, recog_obj):
     filename=askopenfilename()
-    App(top,C, "Tkinter and OpenCV",filename)
+    App(top,C, "Action Recognizer",filename, openpose_obj, recog_obj)
 
 if __name__ == '__main__':
-    # openpose_obj = openpose()
-    # recog_obj = pose_recognition()
+    openpose_obj = openpose()
+    recog_obj = pose_recognition()
 
     top=tkinter.Tk()
 
@@ -94,11 +113,13 @@ if __name__ == '__main__':
     mb= Menubutton(pw2, text = "Get Video Clip", relief = RAISED,padx=125)
     mb.menu = Menu(mb,tearoff=0)
     mb["menu"]  =  mb.menu
-    mb.menu.add_command(label="Take video", command=livevideo)
-    mb.menu.add_command(label="Open a video file", command=myvideo)
+    mb.menu.add_command(label="Take video", command=lambda: livevideo(openpose_obj, recog_obj))
+    mb.menu.add_command(label="Open a video file", command=lambda: myvideo(openpose_obj, recog_obj))
     pw2.add(mb)
 
-    r=Label(pw, text="pose_output",padx=100)
-    pw.add(r)
+    # r=Label(pw, text=pose_output,padx=100)
+    # print(pose_output)
+    # r = Label(pw, textvariable=pose_output, padx=100)
+    # pw.add(r)
 
     top.mainloop()

@@ -24,18 +24,4 @@ class pose_recognition:
         with tf.Session(graph=self.graph) as sess:
             output = sess.run(y, feed_dict={ x: points })
             # print(np.amax(output))
-            return pose_recognition.action(np.argmax(output))
-
-    @staticmethod
-    def action(act):
-        if act == 0:
-            return 'jumping'
-        elif act == 1:
-            return 'jumping jacks'
-        elif act == 2:
-            return 'boxing'
-        elif act == 3:
-            return 'waving 2 hands'
-        elif act == 4:
-            return 'waving 1 hand'
-        return 'clapping'
+            return np.argmax(output)
